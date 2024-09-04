@@ -19,6 +19,7 @@ const logoutItem = computed(() => ({
     icon: mdiLogout,
     color: "info",
     isLogout: true,
+    route: "logout",
 }));
 
 const menuClick = (event, item) => {

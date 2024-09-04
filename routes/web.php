@@ -1,31 +1,39 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AppController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+
+//===PUBLIC====//
+Route::get('/', [PublicController::class, 'index'])->name('welcome');
+
+//===AUTH====//
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/do_login', [AuthController::class, 'do_login'])->name('do_login');
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/do_register', [AuthController::class, 'do_register'])->name('do_register');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+//===ADMIN====//
+Route::prefix('/admin')->middleware(['auth', AdminMiddleware::class])->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/invoice', [AdminController::class, 'invoice'])->name('invoice');
+
+    Route::resource('invoices', InvoiceController::class);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Home');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/invoice', function () {
-    return Inertia::render('Inv');
-})->middleware(['auth', 'verified'])->name('invoice');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+//===BELOVED USERS====//
+Route::prefix('app')->middleware(['auth', UserMiddleware::class])->name('app.')->group(function () {
+    Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
+    Route::get('/invoice', [AppController::class, 'invoice'])->name('invoice');
 });
-
-require __DIR__ . '/auth.php';

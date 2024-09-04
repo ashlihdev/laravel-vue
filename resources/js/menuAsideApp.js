@@ -15,12 +15,12 @@ import {
 
 export default [
     {
-        route: "admin.dashboard",
+        route: "app.dashboard",
         icon: mdiMonitor,
         label: "Dashboard",
     },
     {
-        route: "admin.invoice",
+        route: "app.invoice",
         icon: mdiTable,
         label: "Invoice",
     },

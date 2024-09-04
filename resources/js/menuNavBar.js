@@ -40,7 +40,7 @@ export default [
             {
                 icon: mdiAccount,
                 label: "Dashboard",
-                route: "/dashboard",
+                route: "admin.dashboard",
             },
             {
                 icon: mdiAccount,
